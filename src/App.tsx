@@ -6,8 +6,10 @@ import { About } from './About'
 function App() {
   return (
     <Routes>
+        {/* ssr */}
         <Route index element={<Home />} />
-        <Route path="/about" element={<About />} />
+        {/* csr */}
+        <Route path="/about" element={<About />}/>
     </Routes>
   )
 }

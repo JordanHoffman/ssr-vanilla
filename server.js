@@ -70,6 +70,7 @@ if (!isProduction) {
 // })
 
 //this causes "/about" to not be able to be found
+// ssr home page
 app.get('/', async (req, res) => {
     try {
         const url = req.originalUrl.replace(base, '')
@@ -89,8 +90,8 @@ app.get('/', async (req, res) => {
         const rendered = await render({ path: url, ssrManifest })
 
         const html = template
-            .replace(`<!--app-head-->`, rendered.head ?? '')
-            .replace(`<!--app-html-->`, rendered.html ?? '')
+            .replace("<!--app-head-->", rendered.head ?? '')
+            .replace("<!--app-html-->", rendered.html ?? '')
 
         res.status(200).set({ 'Content-Type': 'text/html' }).send(html)
     } catch (e) {
@@ -100,17 +101,25 @@ app.get('/', async (req, res) => {
     }
 })
 
+app.use("/s",express.static("dist/client"))
+
+// csr about page
+app.get('/about', async (req, res) => {
+    // res.status(200).end("Hi world")
+    res.sendFile(path.resolve(__dirname, "dist/client", "index.html"));
+})
+
 // Middleware to handle CSR routes
-app.get('*', async (req, res) => {
-    try {
-        const filePath = path.resolve(__dirname, 'dist/client/index.html');
-        const htmlData = await fs.readFile(filePath, 'utf-8');
-        res.status(200).set({ 'Content-Type': 'text/html' }).send(htmlData);
-    } catch (err) {
-        console.error('Error reading HTML file:', err);
-        res.status(404).end();
-    }
-});
+// app.get('*', async (req, res) => {
+//     try {
+//         const filePath = path.resolve(__dirname, 'dist/client/index.html');
+//         const htmlData = await fs.readFile(filePath, 'utf-8');
+//         res.status(200).set({ 'Content-Type': 'text/html' }).send(htmlData);
+//     } catch (err) {
+//         console.error('Error reading HTML file:', err);
+//         res.status(404).end();
+//     }
+// });
 
 // Start http server
 app.listen(port, () => {
